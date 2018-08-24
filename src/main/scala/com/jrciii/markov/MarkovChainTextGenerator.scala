@@ -17,7 +17,7 @@ object MarkovChainTextGenerator {
       .averageKey(List("shaking","gait"))
       .averageValue(List(("hearin'",1.0), ("stoppin'",0.5)))
       .entries(entries)
-      .createOrRecoverPersistedTo(new File("E:\\gchain\\chroniclemap"))
+      .createOrRecoverPersistedTo(new File("markovchain_chroniclemap"))
       .asScala
   }
 

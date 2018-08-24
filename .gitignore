@@ -2,3 +2,5 @@
 project/target/
 project/project/target/
 target/
+src/test/resources/chain/
+markovchain_chroniclemap
