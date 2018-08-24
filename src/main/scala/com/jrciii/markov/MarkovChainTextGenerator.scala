@@ -5,11 +5,18 @@ import java.io._
 import net.openhft.chronicle.map.ChronicleMapBuilder
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import org.apache.commons.io.FileUtils
+import org.mapdb.{DBMaker, Serializer}
 
 import scala.util.Random
 import scala.collection.JavaConverters._
-
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.Duration
 object MarkovChainTextGenerator {
+  def makeMapDBMap = {
+    DBMaker.tempFileDB.make.hashMap("gutenbergMarkovChain", new StringArraySerializer, new StringDoubleTupleSerializer).create().asScala
+  }
+
   def makeChronicleMap(entries: Long) = {
     ChronicleMapBuilder
       .of(classOf[List[String]], classOf[List[(String,Double)]])
@@ -35,11 +42,14 @@ object MarkovChainTextGenerator {
     }
   }
 
-  def generateText(dir: String, entries: Long, words: Int): String = {
+  def generateText(dir: String, words: Int): String = {
     val files = FileUtils.listFiles(new File(dir), Array("bz2"), false).asScala
-    val chronicleMap = makeChronicleMap(entries)
-    files.foreach(f => readFileIntoChain(f, chronicleMap))
-    generateStream(chronicleMap, new Random()).take(words).mkString(" ")
+    //val chronicleMap = makeChronicleMap(entries)
+    val map = makeMapDBMap
+    val futures = files.map(f => Future {readFileIntoChain(f, map)})
+    Await.result(Future.sequence(futures), Duration.Inf)
+    println("Done loading files into MapDB")
+    generateStream(map, new Random()).take(words).mkString(" ")
   }
 
   def generateStream(chain: scala.collection.Map[List[String], List[(String, Double)]], randGen: Random) = {

@@ -10,6 +10,8 @@ libraryDependencies += "net.openhft" % "chronicle-map" % "3.16.0"
 libraryDependencies += "org.apache.commons" % "commons-compress" % "1.18"
 // https://mvnrepository.com/artifact/commons-io/commons-io
 libraryDependencies += "commons-io" % "commons-io" % "2.6"
+// https://mvnrepository.com/artifact/org.mapdb/mapdb
+libraryDependencies += "org.mapdb" % "mapdb" % "3.0.7"
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
